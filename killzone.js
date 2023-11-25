@@ -120,7 +120,7 @@ class ImportantTimes {
                 key: "ex",
                    // Sets a zoom factor, too zoomed out text disapears
                 conditions: {
-                scaleRangeX: { min: 10, max: 100 },
+                scaleRangeX: { min: 50, max: 500 },
                 },
                 point: {
                     x: du(d.index()),
