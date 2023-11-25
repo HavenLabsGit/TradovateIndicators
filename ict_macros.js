@@ -3,43 +3,28 @@ const meta = require("./tools/meta");
 const {px, du, op} = require('./tools/graphics');
 
 // Global variables for holding values
-color = '';
 // used to reduce size of rectangle
 du_x = 1;
 message = "";
 
-/******************************************************************
- * Name: macroRectangles
- * Parameter: date time value
- * Returns: boolean
- * Description: Function is many if else statements that compares
- * the current time of the candle and decides if it falls into any
- * of the macro times. If so, we return true otherwise false.
- * ****************************************************************/
 
 function macroRectangles(date_time_value){
 
     // London Macro 2:33am - 3:00am
     if(date_time_value.getUTCHours() == 7  && date_time_value.getUTCMinutes() >= 33){
-        du_x = 1;  // set to full length
-        message = ""; // blank message only need one
-
-        // This will print a message onlye once at a specific time. This means the chart needs to
-        // divide into 36 otherwise we can't see the text. Really only need for lower time frames.
+        du_x = 1;
+        message = "";
         if(date_time_value.getUTCHours() == 7 && (date_time_value.getUTCMinutes() == 36)){
             message = "  London Macro\n2:33am - 3:00am"
         }
-        // If this is the last rectangle to be drawn, we need to reduce size so it does not carry over
-        // the max time in higer time frames.
+
         if (date_time_value.getUTCHours() == 8 && date_time_value.getUTCMinutes() == 0){
             du_x = 0.1;
 
           }
-        // return true
         return true;
 
             }
-    // We basically repeat above over and over for each macro time
 
     // London Macro 4:03am - 4:30am
     else if(date_time_value.getUTCHours() == 9  && date_time_value.getUTCMinutes() >= 3 && date_time_value.getUTCMinutes() <= 30){
@@ -168,19 +153,17 @@ class ImportantTimes {
 
     }
 
-   // built in function for calculator
    map(d) {
 
-       // Create local variable that are constants
         const times = d.timestamp();
-       // See if we need to draw, get bool
         const macroDraw = macroRectangles(times);
-       // These are settings from the menu the user sets
         const rect_color = this.props.rect_color;
         const opc = this.props.transparency;
         const text_color = this.props.text_color;
 
-       // Return statement, will do the drawing.
+        pixel_y = d.low();
+       console.log(message);
+
         return {
             graphics: macroDraw && {
                 items: [
@@ -191,16 +174,15 @@ class ImportantTimes {
                  primitives: [{
                          tag: 'Rectangle',
                          position: {
-                             x: du(d.index()), // place at time on X
-                             y:  op(du(d.low()), '+', du(300)), // start at low of candle, add 300 display units
+                             x: du(d.index()),
+                             y:  op(du(d.low()), '+', du(300)),
                          },
                          size: {
-                             height: du(-500), //Ensure candle covers the area
-                             width: du(du_x) // Size set from above
+                             height: du(-500),
+                             width: du(du_x)
                          },
                      }
                  ],
-                 // Values from user
                  fillStyle: {
                      color: rect_color,
                      opacity: opc,
@@ -210,13 +192,12 @@ class ImportantTimes {
                {
                 tag: "Text",
                 key: "ex",
-                   // Sets a zoom factor, too zoomed out text disapears
                 conditions: {
                 scaleRangeX: { min: 10, max: 100 },
                 },
                 point: {
                     x: du(d.index()),
-                    y: op(du(d.high()), '+', du(-9)),
+                    y: op(du(d.high()), '+', du(-3)),
             },
             text: message,
             style: { fontSize: 20, fontWeight: "bold", fill: text_color },
@@ -228,7 +209,7 @@ class ImportantTimes {
     }
 }
 
-//Create the menu
+
 module.exports = {
     name: "ICT Time Macros",
     description: "ICT Time Macros",
